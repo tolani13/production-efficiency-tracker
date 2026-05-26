@@ -9,7 +9,7 @@ This V1 is intentionally frontend-first:
 - No local admin access
 - No company-system connection
 - No sensitive company, customer, or order data
-- Sample data loads automatically
+- Two sample rows load automatically
 - Entries are saved only in the browser using `localStorage`
 
 ## Run Locally
@@ -55,6 +55,10 @@ For a production version, add authentication, role-based permissions, audit hist
 - Dashboard: totals and average efficiency cards plus output trend.
 - Reports: efficiency by shift, machine, operator, downtime reason, weekly trend, best/worst days, and scrap trend.
 - Formula Guide: plain-language formula and validation documentation.
+
+## Sample Rows
+
+The app starts with two sample rows: one required formula-validation row and one simple current-day example row. The sample set is intentionally small so testers can enter real trial data without cleaning up a large demo dataset first.
 
 ## Required Sample Row
 
