@@ -657,6 +657,7 @@ function Dashboard({ summary, entries, warningCount }: { summary: ReturnType<typ
 
 function Reports({ entries, filters }: { entries: ProductionEntry[]; filters: FilterState }) {
   const [showPreview, setShowPreview] = useState(false);
+  const [reportPage, setReportPage] = useState<'overview' | 'detail'>('overview');
   const byShift = groupBy(entries, 'shift');
   const byMachine = groupBy(entries, 'machine');
   const byOperator = groupBy(entries, 'operatorName');
@@ -672,6 +673,14 @@ function Reports({ entries, filters }: { entries: ProductionEntry[]; filters: Fi
   return (
     <section className="stack">
       <div className="report-actions">
+        <div className="tabs" role="tablist" aria-label="Report pages">
+          <button className={reportPage === 'overview' ? 'active' : ''} onClick={() => setReportPage('overview')}>
+            Page 1: Efficiency
+          </button>
+          <button className={reportPage === 'detail' ? 'active' : ''} onClick={() => setReportPage('detail')}>
+            Page 2: Trends
+          </button>
+        </div>
         <button className="primary" onClick={() => setShowPreview(true)}>
           <FileText aria-hidden="true" /> Generate Print Preview
         </button>
@@ -696,29 +705,43 @@ function Reports({ entries, filters }: { entries: ProductionEntry[]; filters: Fi
         />
       )}
 
-      <section className="reports-grid">
-        <ReportTable title="Efficiency by Shift" rows={byShift} />
-        <ReportTable title="Efficiency by Machine" rows={byMachine} />
-        <ReportTable title="Efficiency by Operator" rows={byOperator} />
-        <section className="report-panel">
-          <h2>Downtime by Reason</h2>
-          <BarList rows={byReason.map((row) => ({ label: row.label, value: row.downtime }))} valueLabel="min" />
+      {reportPage === 'overview' && (
+        <section className="reports-grid">
+          <ReportTable title="Efficiency by Shift" rows={byShift} />
+          <ReportTable title="Efficiency by Machine" rows={byMachine} />
+          <ReportTable title="Efficiency by Operator" rows={byOperator} />
+          <section className="report-panel">
+            <h2>Output Efficiency by Machine</h2>
+            <ColumnChart rows={byMachine.map((row) => ({ label: row.label, value: (row.output ?? 0) * 100 }))} valueLabel="%" maxValue={100} />
+          </section>
         </section>
-        <ReportTable title="Weekly Trend" rows={byDay} />
-        <section className="report-panel">
-          <h2>Best/Worst Production Days</h2>
-          <MetricList
-            rows={[
-              ['Best Day', bestWorst[0] ? `${bestWorst[0].label} (${formatPercent(bestWorst[0].output)})` : 'N/A'],
-              ['Worst Day', bestWorst.at(-1) ? `${bestWorst.at(-1)!.label} (${formatPercent(bestWorst.at(-1)!.output)})` : 'N/A'],
-            ]}
-          />
+      )}
+
+      {reportPage === 'detail' && (
+        <section className="reports-grid">
+          <section className="report-panel">
+            <h2>Downtime by Reason</h2>
+            <ColumnChart rows={byReason.map((row) => ({ label: row.label, value: row.downtime }))} valueLabel="min" />
+          </section>
+          <section className="report-panel">
+            <h2>Weekly Output Trend</h2>
+            <ColumnChart rows={byDay.map((row) => ({ label: row.label, value: row.actual }))} valueLabel="pipes" />
+          </section>
+          <section className="report-panel">
+            <h2>Best/Worst Production Days</h2>
+            <MetricList
+              rows={[
+                ['Best Day', bestWorst[0] ? `${bestWorst[0].label} (${formatPercent(bestWorst[0].output)})` : 'N/A'],
+                ['Worst Day', bestWorst.at(-1) ? `${bestWorst.at(-1)!.label} (${formatPercent(bestWorst.at(-1)!.output)})` : 'N/A'],
+              ]}
+            />
+          </section>
+          <section className="report-panel">
+            <h2>Scrap Trend</h2>
+            <ColumnChart rows={[...scrapTrend.entries()].sort().map(([label, value]) => ({ label, value }))} valueLabel="scrap" />
+          </section>
         </section>
-        <section className="report-panel wide-report">
-          <h2>Scrap Trend</h2>
-          <BarList rows={[...scrapTrend.entries()].sort().map(([label, value]) => ({ label, value }))} valueLabel="scrap" />
-        </section>
-      </section>
+      )}
     </section>
   );
 }
@@ -785,7 +808,7 @@ function PrintPreview({
       <div className="print-grid">
         <section className="report-panel">
           <h2>Downtime by Reason</h2>
-          <BarList rows={byReason.map((row) => ({ label: row.label, value: row.downtime }))} valueLabel="min" />
+          <ColumnChart rows={byReason.map((row) => ({ label: row.label, value: row.downtime }))} valueLabel="min" />
         </section>
         <section className="report-panel">
           <h2>Best/Worst Production Days</h2>
@@ -800,7 +823,7 @@ function PrintPreview({
 
       <section className="report-panel">
         <h2>Scrap Trend</h2>
-        <BarList rows={scrapTrend} valueLabel="scrap" />
+        <ColumnChart rows={scrapTrend} valueLabel="scrap" />
       </section>
 
       <section className="report-panel">
@@ -892,6 +915,34 @@ function BarList({ rows, valueLabel }: { rows: Array<{ label: string; value: num
           <strong>{formatNumber(row.value)} {valueLabel}</strong>
         </div>
       ))}
+    </div>
+  );
+}
+
+function ColumnChart({
+  rows,
+  valueLabel,
+  maxValue,
+}: {
+  rows: Array<{ label: string; value: number }>;
+  valueLabel: string;
+  maxValue?: number;
+}) {
+  const max = Math.max(maxValue ?? 0, ...rows.map((row) => row.value), 1);
+  return (
+    <div className="column-chart">
+      <div className="chart-plot">
+        {rows.map((row) => (
+          <div className="column-item" key={row.label}>
+            <strong>{formatNumber(row.value, valueLabel === '%' ? 1 : 0)}{valueLabel === '%' ? '%' : ''}</strong>
+            <div className="column-track">
+              <div style={{ height: `${Math.max(3, (row.value / max) * 100)}%` }} />
+            </div>
+            <span>{row.label}</span>
+          </div>
+        ))}
+      </div>
+      {valueLabel !== '%' && <p className="chart-note">Values shown in {valueLabel}.</p>}
     </div>
   );
 }

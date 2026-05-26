@@ -454,7 +454,34 @@ tr.needs-review td:first-child {
 }
 
 .report-actions {
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tabs {
+  display: inline-flex;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabs button {
+  min-height: 42px;
+  border: 0;
+  border-right: 2px solid var(--line);
+  background: white;
+  color: #214239;
+  font-weight: 900;
+  padding: 0 14px;
+}
+
+.tabs button:last-child {
+  border-right: 0;
+}
+
+.tabs button.active {
+  background: #214239;
+  color: white;
 }
 
 .print-preview {
@@ -545,6 +572,71 @@ tr.needs-review td:first-child {
   border-right: 2px solid var(--line);
 }
 
+.column-chart {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.chart-plot {
+  min-height: 260px;
+  border: 2px solid var(--line);
+  border-top: 0;
+  border-right: 0;
+  display: flex;
+  align-items: end;
+  gap: 14px;
+  padding: 18px 14px 12px;
+  overflow-x: auto;
+  background:
+    linear-gradient(to top, rgba(17, 17, 17, 0.08) 1px, transparent 1px) 0 0 / 100% 25%;
+}
+
+.column-item {
+  min-width: 72px;
+  height: 220px;
+  display: grid;
+  grid-template-rows: 26px 1fr 46px;
+  gap: 7px;
+  align-items: end;
+  text-align: center;
+}
+
+.column-item strong {
+  align-self: center;
+  font-size: 0.8rem;
+}
+
+.column-track {
+  height: 100%;
+  width: 100%;
+  border: 2px solid var(--line);
+  display: flex;
+  align-items: end;
+  background: white;
+}
+
+.column-track div {
+  width: 100%;
+  background: #3f8f6d;
+  border-top: 2px solid var(--line);
+}
+
+.column-item span {
+  font-size: 0.74rem;
+  font-weight: 900;
+  color: #34463e;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.chart-note {
+  margin: 0;
+  color: #52645c;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
 .guide {
   display: grid;
   gap: 16px;
@@ -615,6 +707,18 @@ tr.needs-review td:first-child {
     grid-template-columns: 1fr 1fr;
   }
 
+  .report-actions {
+    align-items: stretch;
+  }
+
+  .tabs {
+    width: 100%;
+  }
+
+  .tabs button {
+    flex: 1;
+  }
+
   .bar-row {
     grid-template-columns: 1fr;
   }
@@ -671,6 +775,11 @@ tr.needs-review td:first-child {
 
   .bar-track {
     border: 2px solid var(--line);
+  }
+
+  .chart-plot,
+  .column-track {
+    border-color: var(--line);
   }
 
   th {
