@@ -53,13 +53,12 @@ button {
 
 .brand {
   display: grid;
-  gap: 12px;
-  align-items: center;
-  background: white;
+  place-items: center;
+  background: var(--nf-blue);
   border: 2px solid var(--line);
   border-radius: 8px;
-  color: #111;
-  padding: 18px;
+  padding: 22px 18px;
+  min-height: 126px;
 }
 
 .brand img {

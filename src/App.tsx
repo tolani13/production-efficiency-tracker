@@ -15,7 +15,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { average, calculateEntry, efficiencyClass, formatNumber, formatPercent } from './calculations';
-import nordfabLogo from './assets/nordfab-logo.png';
+import nordfabLogo from './assets/nordfab-logo-black.png';
 import { downtimeReasons, emptyEntry, machines, sampleEntries, shifts } from './sampleData';
 import type { FilterState, ProductionEntry } from './types';
 
@@ -267,10 +267,6 @@ function App() {
       <aside className="sidebar">
         <div className="brand">
           <img src={nordfabLogo} alt="Nordfab" />
-          <div>
-            <strong>Production Efficiency Tracker</strong>
-            <span>Cloud demo V1</span>
-          </div>
         </div>
         <nav>
           <NavButton icon={<Plus />} label="Daily Entry" active={screen === 'entry'} onClick={() => setScreen('entry')} />
