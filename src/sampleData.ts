@@ -1,6 +1,6 @@
 import type { ProductionEntry } from './types';
 
-export const shifts = ['1st', '2nd', '3rd', 'Weekend'] as const;
+export const shifts = ['Days', '1st', '2nd'] as const;
 export const machines = ['FlexMaster', 'FlexiStar'];
 export const downtimeReasons = [
   'None',
@@ -15,7 +15,7 @@ export const downtimeReasons = [
 export const emptyEntry: ProductionEntry = {
   id: '',
   date: '2026-05-26',
-  shift: '1st',
+  shift: 'Days',
   machine: 'FlexMaster',
   operatorName: '',
   shiftHours: 8.5,
@@ -35,7 +35,7 @@ export const sampleEntries: ProductionEntry[] = [
   {
     id: 'sample-2026-05-22-1',
     date: '2026-05-22',
-    shift: '1st',
+    shift: 'Days',
     shiftHours: 8.5,
     breakMinutes: 60,
     setupCount: 4,
@@ -46,7 +46,7 @@ export const sampleEntries: ProductionEntry[] = [
     actualPipeQuantity: 596,
     scrapQuantity: 12,
     downtimeReason: 'Sensor Fault',
-    operatorName: 'Steve',
+    operatorName: '',
     machine: 'FlexMaster',
     notes: 'Required demo validation row.',
   },
@@ -55,7 +55,7 @@ export const sampleEntries: ProductionEntry[] = [
     date: '2026-05-26',
     shift: '1st',
     machine: 'FlexiStar',
-    operatorName: 'Alicia',
+    operatorName: '',
     shiftHours: 8.5,
     breakMinutes: 60,
     setupCount: 3,

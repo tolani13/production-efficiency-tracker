@@ -67,9 +67,9 @@ The app starts with two sample rows: one required formula-validation row and one
 The sample data includes this validation row:
 
 - Date: `2026-05-22`
-- Shift: `1st`
-- Machine: `Pipe Line 1`
-- Operator Name: `Steve`
+- Shift: `Days`
+- Machine: `FlexMaster`
+- Operator Name: blank for live testing
 - Shift Hours: `8.5`
 - Break Minutes: `60`
 - Setup Count: `4`

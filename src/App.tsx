@@ -22,8 +22,8 @@ import type { FilterState, ProductionEntry } from './types';
 type Screen = 'entry' | 'table' | 'dashboard' | 'reports' | 'guide';
 type GroupRow = { label: string; count: number; setup: number | null; runtime: number | null; output: number | null; downtime: number; actual: number };
 
-const storageKey = 'production-efficiency-tracker-v2';
-const operatorNamesKey = 'production-efficiency-tracker-operator-names';
+const storageKey = 'production-efficiency-tracker-v3';
+const operatorNamesKey = 'production-efficiency-tracker-operator-names-v2';
 
 const inputFields: Array<keyof ProductionEntry> = [
   'date',

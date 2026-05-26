@@ -1,4 +1,4 @@
-export type Shift = '1st' | '2nd' | '3rd' | 'Weekend';
+export type Shift = 'Days' | '1st' | '2nd';
 
 export type ProductionEntry = {
   id: string;
