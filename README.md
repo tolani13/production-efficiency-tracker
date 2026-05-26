@@ -53,7 +53,7 @@ For a production version, add authentication, role-based permissions, audit hist
 - Daily Entry: add or edit production records and see calculated preview before saving.
 - Entries Table: view input fields, helper fields, warnings, edit/delete actions, filters, and CSV export.
 - Dashboard: totals and average efficiency cards plus output trend.
-- Reports: efficiency by shift, machine, operator, downtime reason, weekly trend, best/worst days, and scrap trend.
+- Reports: efficiency by shift, machine, operator, downtime reason, weekly trend, best/worst days, scrap trend, and a generated print-preview report.
 - Formula Guide: plain-language formula and validation documentation.
 
 ## Sample Rows
@@ -119,6 +119,10 @@ Output Efficiency % = `Actual Pipe Quantity / Theoretical Quantity`
 - If runtime after actual setups is zero or negative, runtime availability is shown as `N/A` and the row is flagged.
 - If productive runtime is negative, summaries treat it as `0` and the row is flagged.
 - Suspicious entries are highlighted when efficiencies are below `75%`, output is unusually high, scrap is unusually high, or inputs create impossible runtime.
+
+## Print Preview
+
+On the Reports screen, use **Generate Print Preview** to create a clean report from the current filters. Use **Print Preview** after generation to print only that report view without the sidebar, filters, or app controls.
 
 ## Why Not Multiply The Efficiency Metrics?
 

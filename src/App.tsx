@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Pencil,
   Plus,
+  Printer,
   RefreshCcw,
   Save,
   Table2,
@@ -280,7 +281,7 @@ function App() {
           <EntriesTable entries={sortedEntries} onEdit={editEntry} onDelete={deleteEntry} />
         )}
         {screen === 'dashboard' && <Dashboard summary={summary} entries={filteredEntries} warningCount={warningCount} />}
-        {screen === 'reports' && <Reports entries={filteredEntries} />}
+        {screen === 'reports' && <Reports entries={filteredEntries} filters={filters} />}
         {screen === 'guide' && <FormulaGuide />}
       </main>
     </div>
@@ -597,7 +598,8 @@ function Dashboard({ summary, entries, warningCount }: { summary: ReturnType<typ
   );
 }
 
-function Reports({ entries }: { entries: ProductionEntry[] }) {
+function Reports({ entries, filters }: { entries: ProductionEntry[]; filters: FilterState }) {
+  const [showPreview, setShowPreview] = useState(false);
   const byShift = groupBy(entries, 'shift');
   const byMachine = groupBy(entries, 'machine');
   const byOperator = groupBy(entries, 'operatorName');
@@ -611,27 +613,178 @@ function Reports({ entries }: { entries: ProductionEntry[] }) {
     }, new Map<string, number>());
 
   return (
-    <section className="reports-grid">
-      <ReportTable title="Efficiency by Shift" rows={byShift} />
-      <ReportTable title="Efficiency by Machine" rows={byMachine} />
-      <ReportTable title="Efficiency by Operator" rows={byOperator} />
-      <section className="report-panel">
-        <h2>Downtime by Reason</h2>
-        <BarList rows={byReason.map((row) => ({ label: row.label, value: row.downtime }))} valueLabel="min" />
-      </section>
-      <ReportTable title="Weekly Trend" rows={byDay} />
-      <section className="report-panel">
-        <h2>Best/Worst Production Days</h2>
-        <MetricList
-          rows={[
-            ['Best Day', bestWorst[0] ? `${bestWorst[0].label} (${formatPercent(bestWorst[0].output)})` : 'N/A'],
-            ['Worst Day', bestWorst.at(-1) ? `${bestWorst.at(-1)!.label} (${formatPercent(bestWorst.at(-1)!.output)})` : 'N/A'],
-          ]}
+    <section className="stack">
+      <div className="report-actions">
+        <button className="primary" onClick={() => setShowPreview(true)}>
+          <FileText aria-hidden="true" /> Generate Print Preview
+        </button>
+        {showPreview && (
+          <button className="ghost" onClick={() => window.print()}>
+            <Printer aria-hidden="true" /> Print Preview
+          </button>
+        )}
+      </div>
+
+      {showPreview && (
+        <PrintPreview
+          entries={entries}
+          filters={filters}
+          byShift={byShift}
+          byMachine={byMachine}
+          byOperator={byOperator}
+          byReason={byReason}
+          byDay={byDay}
+          bestWorst={bestWorst}
+          scrapTrend={[...scrapTrend.entries()].sort().map(([label, value]) => ({ label, value }))}
         />
+      )}
+
+      <section className="reports-grid">
+        <ReportTable title="Efficiency by Shift" rows={byShift} />
+        <ReportTable title="Efficiency by Machine" rows={byMachine} />
+        <ReportTable title="Efficiency by Operator" rows={byOperator} />
+        <section className="report-panel">
+          <h2>Downtime by Reason</h2>
+          <BarList rows={byReason.map((row) => ({ label: row.label, value: row.downtime }))} valueLabel="min" />
+        </section>
+        <ReportTable title="Weekly Trend" rows={byDay} />
+        <section className="report-panel">
+          <h2>Best/Worst Production Days</h2>
+          <MetricList
+            rows={[
+              ['Best Day', bestWorst[0] ? `${bestWorst[0].label} (${formatPercent(bestWorst[0].output)})` : 'N/A'],
+              ['Worst Day', bestWorst.at(-1) ? `${bestWorst.at(-1)!.label} (${formatPercent(bestWorst.at(-1)!.output)})` : 'N/A'],
+            ]}
+          />
+        </section>
+        <section className="report-panel wide-report">
+          <h2>Scrap Trend</h2>
+          <BarList rows={[...scrapTrend.entries()].sort().map(([label, value]) => ({ label, value }))} valueLabel="scrap" />
+        </section>
       </section>
-      <section className="report-panel wide-report">
+    </section>
+  );
+}
+
+function PrintPreview({
+  entries,
+  filters,
+  byShift,
+  byMachine,
+  byOperator,
+  byReason,
+  byDay,
+  bestWorst,
+  scrapTrend,
+}: {
+  entries: ProductionEntry[];
+  filters: FilterState;
+  byShift: GroupRow[];
+  byMachine: GroupRow[];
+  byOperator: GroupRow[];
+  byReason: GroupRow[];
+  byDay: GroupRow[];
+  bestWorst: GroupRow[];
+  scrapTrend: Array<{ label: string; value: number }>;
+}) {
+  const summary = summarize(entries);
+  const filterText = [
+    filters.from ? `From ${filters.from}` : '',
+    filters.to ? `To ${filters.to}` : '',
+    filters.shift ? `Shift ${filters.shift}` : '',
+    filters.machine ? `Machine ${filters.machine}` : '',
+    filters.operatorName ? `Operator ${filters.operatorName}` : '',
+  ].filter(Boolean);
+
+  return (
+    <section className="print-preview">
+      <div className="print-header">
+        <div>
+          <p className="eyebrow">Generated report preview</p>
+          <h2>Production Efficiency Tracker Report</h2>
+          <span>{filterText.length ? filterText.join(' | ') : 'All current entries'} | {entries.length} entries</span>
+        </div>
+        <strong>{new Date().toLocaleDateString()}</strong>
+      </div>
+
+      <div className="print-summary">
+        <SummaryCard label="Total Actual Quantity" value={formatNumber(summary.totalActual)} />
+        <SummaryCard label="Total Theoretical Quantity" value={formatNumber(summary.totalTheoretical)} />
+        <SummaryCard label="Average Setup Efficiency %" value={formatPercent(summary.avgSetup)} tone={efficiencyClass(summary.avgSetup)} />
+        <SummaryCard label="Average Runtime Availability %" value={formatPercent(summary.avgRuntime)} tone={efficiencyClass(summary.avgRuntime)} />
+        <SummaryCard label="Average Output Efficiency %" value={formatPercent(summary.avgOutput)} tone={efficiencyClass(summary.avgOutput)} />
+        <SummaryCard label="Total Downtime Minutes" value={formatNumber(summary.totalDowntime)} />
+        <SummaryCard label="Total Scrap Quantity" value={formatNumber(summary.totalScrap)} />
+        <SummaryCard label="Pipes Per Hour" value={formatNumber(summary.pipesPerHour, 1)} />
+      </div>
+
+      <div className="print-grid">
+        <ReportTable title="Efficiency by Shift" rows={byShift} />
+        <ReportTable title="Efficiency by Machine" rows={byMachine} />
+        <ReportTable title="Efficiency by Operator" rows={byOperator} />
+        <ReportTable title="Weekly Trend" rows={byDay} />
+      </div>
+
+      <div className="print-grid">
+        <section className="report-panel">
+          <h2>Downtime by Reason</h2>
+          <BarList rows={byReason.map((row) => ({ label: row.label, value: row.downtime }))} valueLabel="min" />
+        </section>
+        <section className="report-panel">
+          <h2>Best/Worst Production Days</h2>
+          <MetricList
+            rows={[
+              ['Best Day', bestWorst[0] ? `${bestWorst[0].label} (${formatPercent(bestWorst[0].output)})` : 'N/A'],
+              ['Worst Day', bestWorst.at(-1) ? `${bestWorst.at(-1)!.label} (${formatPercent(bestWorst.at(-1)!.output)})` : 'N/A'],
+            ]}
+          />
+        </section>
+      </div>
+
+      <section className="report-panel">
         <h2>Scrap Trend</h2>
-        <BarList rows={[...scrapTrend.entries()].sort().map(([label, value]) => ({ label, value }))} valueLabel="scrap" />
+        <BarList rows={scrapTrend} valueLabel="scrap" />
+      </section>
+
+      <section className="report-panel">
+        <h2>Entry Detail</h2>
+        <table className="compact-table print-detail-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Shift</th>
+              <th>Machine</th>
+              <th>Operator</th>
+              <th>Actual Qty</th>
+              <th>Theoretical Qty</th>
+              <th>Setup</th>
+              <th>Runtime</th>
+              <th>Output</th>
+              <th>Downtime</th>
+              <th>Scrap</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => {
+              const calc = calculateEntry(entry);
+              return (
+                <tr key={entry.id}>
+                  <td>{entry.date}</td>
+                  <td>{entry.shift}</td>
+                  <td>{entry.machine}</td>
+                  <td>{entry.operatorName}</td>
+                  <td>{formatNumber(entry.actualPipeQuantity)}</td>
+                  <td>{formatNumber(calc.theoreticalQuantity)}</td>
+                  <td>{formatPercent(calc.setupEfficiency)}</td>
+                  <td>{formatPercent(calc.runtimeAvailability)}</td>
+                  <td>{formatPercent(calc.outputEfficiency)}</td>
+                  <td>{formatNumber(entry.downtimeMinutes)}</td>
+                  <td>{formatNumber(entry.scrapQuantity)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </section>
     </section>
   );

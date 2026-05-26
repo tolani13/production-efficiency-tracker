@@ -150,6 +150,7 @@ h2 {
 .top-actions,
 .button-row,
 .icon-actions,
+.report-actions,
 .efficiency-row {
   display: flex;
   gap: 10px;
@@ -440,6 +441,52 @@ tr.needs-review td:first-child {
   gap: 18px;
 }
 
+.report-actions {
+  justify-content: flex-end;
+}
+
+.print-preview {
+  background: white;
+  border: 2px solid #111;
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(20, 36, 29, 0.06);
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+}
+
+.print-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  border-bottom: 2px solid #111;
+  padding-bottom: 14px;
+}
+
+.print-header span {
+  color: #52645c;
+  display: block;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.print-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.print-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.print-detail-table {
+  min-width: 0;
+}
+
 .wide-report {
   grid-column: 1 / -1;
 }
@@ -560,5 +607,63 @@ tr.needs-review td:first-child {
 
   .bar-row strong {
     text-align: left;
+  }
+}
+
+@media print {
+  @page {
+    margin: 0.45in;
+  }
+
+  body {
+    background: white;
+  }
+
+  .sidebar,
+  .topbar,
+  .filters,
+  .report-actions,
+  .reports-grid,
+  .demo-note {
+    display: none !important;
+  }
+
+  .app,
+  main {
+    display: block;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .print-preview {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .print-summary,
+  .print-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-card,
+  .report-panel,
+  .metric-list div,
+  .badge {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .bar-track {
+    border: 1px solid #111;
+  }
+
+  th {
+    position: static;
+  }
+
+  table {
+    min-width: 0;
   }
 }
