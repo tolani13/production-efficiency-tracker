@@ -328,6 +328,7 @@ function App() {
         {screen === 'dashboard' && <Dashboard summary={summary} entries={filteredEntries} warningCount={warningCount} />}
         {screen === 'reports' && <Reports entries={filteredEntries} filters={filters} />}
         {screen === 'guide' && <FormulaGuide />}
+        <AppFooter />
       </main>
     </div>
   );
@@ -339,6 +340,14 @@ function NavButton({ icon, label, active, onClick }: { icon: React.ReactNode; la
       {icon}
       <span>{label}</span>
     </button>
+  );
+}
+
+function AppFooter() {
+  return (
+    <footer className="app-footer">
+      Built by Recursive Chaos Labs L.L.C. for Polymathic Systems L.L.C.
+    </footer>
   );
 }
 
@@ -866,6 +875,7 @@ function PrintPreview({
           </tbody>
         </table>
       </section>
+      <AppFooter />
     </section>
   );
 }

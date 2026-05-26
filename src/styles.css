@@ -427,6 +427,16 @@ tr.needs-review td:first-child {
   gap: 18px;
 }
 
+.app-footer {
+  color: #50625a;
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-top: 24px;
+  padding: 14px 0 0;
+  border-top: 2px solid var(--line);
+  text-align: center;
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(4, minmax(160px, 1fr));
@@ -742,7 +752,8 @@ tr.needs-review td:first-child {
   .filters,
   .report-actions,
   .reports-grid,
-  .demo-note {
+  .demo-note,
+  main > .app-footer {
     display: none !important;
   }
 
