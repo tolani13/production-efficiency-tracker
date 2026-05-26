@@ -16,14 +16,13 @@ import {
   Trash2,
 } from 'lucide-react';
 import { average, calculateEntry, efficiencyClass, formatNumber, formatPercent } from './calculations';
-import { downtimeReasons, emptyEntry, sampleEntries, shifts } from './sampleData';
+import { downtimeReasons, emptyEntry, machines, sampleEntries, shifts } from './sampleData';
 import type { FilterState, ProductionEntry } from './types';
 
 type Screen = 'entry' | 'table' | 'dashboard' | 'reports' | 'guide';
 type GroupRow = { label: string; count: number; setup: number | null; runtime: number | null; output: number | null; downtime: number; actual: number };
 
 const storageKey = 'production-efficiency-tracker-v2';
-const machineNamesKey = 'production-efficiency-tracker-machine-names';
 const operatorNamesKey = 'production-efficiency-tracker-operator-names';
 
 const inputFields: Array<keyof ProductionEntry> = [
@@ -202,7 +201,6 @@ function groupBy(entries: ProductionEntry[], key: keyof ProductionEntry): GroupR
 
 function App() {
   const { entries, setEntries } = useEntries();
-  const savedMachines = useSavedNames(machineNamesKey);
   const savedOperators = useSavedNames(operatorNamesKey);
   const [screen, setScreen] = useState<Screen>('entry');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -210,10 +208,6 @@ function App() {
   const [filters, setFilters] = useState<FilterState>({ from: '', to: '', shift: '', machine: '', operatorName: '' });
 
   const filteredEntries = useMemo(() => filterEntries(entries, filters), [entries, filters]);
-  const machineFilterOptions = useMemo(
-    () => uniqueNames([...entries.map((entry) => entry.machine), ...savedMachines.names]),
-    [entries, savedMachines.names],
-  );
   const operatorFilterOptions = useMemo(
     () => uniqueNames([...entries.map((entry) => entry.operatorName), ...savedOperators.names]),
     [entries, savedOperators.names],
@@ -224,7 +218,6 @@ function App() {
   const warningCount = entries.reduce((sum, entry) => sum + (calculateEntry(entry).warnings.length ? 1 : 0), 0);
 
   function saveDraft() {
-    savedMachines.saveName(draft.machine);
     savedOperators.saveName(draft.operatorName);
     if (editingId) {
       setEntries((current) => current.map((entry) => (entry.id === editingId ? { ...draft, id: editingId } : entry)));
@@ -311,7 +304,7 @@ function App() {
         <Filters
           filters={filters}
           setFilters={setFilters}
-          machineOptions={machineFilterOptions}
+          machineOptions={machines}
           operatorOptions={operatorFilterOptions}
         />
 
@@ -326,7 +319,6 @@ function App() {
               setDraft(makeEntry());
               setEditingId(null);
             }}
-            machineSuggestions={savedMachines.names}
             operatorSuggestions={savedOperators.names}
           />
         )}
@@ -419,7 +411,6 @@ function DailyEntry({
   updateDraft,
   saveDraft,
   cancelEdit,
-  machineSuggestions,
   operatorSuggestions,
 }: {
   draft: ProductionEntry;
@@ -428,7 +419,6 @@ function DailyEntry({
   updateDraft: (field: keyof ProductionEntry, value: string) => void;
   saveDraft: () => void;
   cancelEdit: () => void;
-  machineSuggestions: string[];
   operatorSuggestions: string[];
 }) {
   return (
@@ -453,12 +443,11 @@ function DailyEntry({
           </label>
           <label>
             Machine
-            <input
-              list="machine-suggestions"
-              value={draft.machine}
-              onChange={(event) => updateDraft('machine', event.target.value)}
-              placeholder="Type machine name"
-            />
+            <select value={draft.machine} onChange={(event) => updateDraft('machine', event.target.value)}>
+              {machines.map((machine) => (
+                <option key={machine}>{machine}</option>
+              ))}
+            </select>
           </label>
           <label>
             Operator Name
@@ -469,11 +458,6 @@ function DailyEntry({
               placeholder="Type operator name"
             />
           </label>
-          <datalist id="machine-suggestions">
-            {machineSuggestions.map((machine) => (
-              <option key={machine} value={machine} />
-            ))}
-          </datalist>
           <datalist id="operator-suggestions">
             {operatorSuggestions.map((operator) => (
               <option key={operator} value={operator} />

@@ -56,7 +56,7 @@ For a production version, add authentication, role-based permissions, audit hist
 - Reports: efficiency by shift, machine, operator, downtime reason, weekly trend, best/worst days, scrap trend, and a generated print-preview report.
 - Formula Guide: plain-language formula and validation documentation.
 
-Machine and operator names are manually typed on the Daily Entry form. When an entry is saved, those typed names are remembered in that browser as future suggestions.
+Machines are selected from `FlexMaster` and `FlexiStar`. Operator names are manually typed on the Daily Entry form. When an entry is saved, typed operator names are remembered in that browser as future suggestions.
 
 ## Sample Rows
 
