@@ -1,4 +1,4 @@
-# Production Efficiency Tracker
+# Nordfab Production Tracker
 
 Browser-based proof-of-concept app for replacing a daily production efficiency spreadsheet with a cloud-demo-ready experience.
 

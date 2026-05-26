@@ -4,6 +4,7 @@ import {
   BarChart3,
   BookOpen,
   Download,
+  Factory,
   FileText,
   LayoutDashboard,
   Pencil,
@@ -15,7 +16,6 @@ import {
   Trash2,
 } from 'lucide-react';
 import { average, calculateEntry, efficiencyClass, formatNumber, formatPercent } from './calculations';
-import nordfabLogo from './assets/nordfab-logo-black.png';
 import { downtimeReasons, emptyEntry, machines, sampleEntries, shifts } from './sampleData';
 import type { FilterState, ProductionEntry } from './types';
 
@@ -266,7 +266,11 @@ function App() {
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <img src={nordfabLogo} alt="Nordfab" />
+          <Factory aria-hidden="true" />
+          <div>
+            <strong>Nordfab Production Tracker</strong>
+            <span>Cloud demo V1</span>
+          </div>
         </div>
         <nav>
           <NavButton icon={<Plus />} label="Daily Entry" active={screen === 'entry'} onClick={() => setScreen('entry')} />
@@ -777,7 +781,7 @@ function PrintPreview({
       <div className="print-header">
         <div>
           <p className="eyebrow">Generated report preview</p>
-          <h2>Production Efficiency Tracker Report</h2>
+          <h2>Nordfab Production Tracker Report</h2>
           <span>{filterText.length ? filterText.join(' | ') : 'All current entries'} | {entries.length} entries</span>
         </div>
         <strong>{new Date().toLocaleDateString()}</strong>
