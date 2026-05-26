@@ -56,6 +56,8 @@ For a production version, add authentication, role-based permissions, audit hist
 - Reports: efficiency by shift, machine, operator, downtime reason, weekly trend, best/worst days, scrap trend, and a generated print-preview report.
 - Formula Guide: plain-language formula and validation documentation.
 
+Machine and operator names are manually typed on the Daily Entry form. When an entry is saved, those typed names are remembered in that browser as future suggestions.
+
 ## Sample Rows
 
 The app starts with two sample rows: one required formula-validation row and one simple current-day example row. The sample set is intentionally small so testers can enter real trial data without cleaning up a large demo dataset first.

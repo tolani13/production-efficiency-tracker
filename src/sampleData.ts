@@ -1,8 +1,6 @@
 import type { ProductionEntry } from './types';
 
 export const shifts = ['1st', '2nd', '3rd', 'Weekend'] as const;
-export const machines = ['Pipe Line 1', 'Pipe Line 2', 'Pipe Line 3', 'Spiral Line', 'Finishing Cell'];
-export const operators = ['Steve', 'Alicia', 'Marcus', 'Priya', 'Jordan', 'Dana'];
 export const downtimeReasons = [
   'None',
   'Sensor Fault',
@@ -17,8 +15,8 @@ export const emptyEntry: ProductionEntry = {
   id: '',
   date: '2026-05-26',
   shift: '1st',
-  machine: 'Pipe Line 1',
-  operatorName: 'Steve',
+  machine: '',
+  operatorName: '',
   shiftHours: 8.5,
   breakMinutes: 60,
   setupCount: 0,

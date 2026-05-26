@@ -16,13 +16,15 @@ import {
   Trash2,
 } from 'lucide-react';
 import { average, calculateEntry, efficiencyClass, formatNumber, formatPercent } from './calculations';
-import { downtimeReasons, emptyEntry, machines, operators, sampleEntries, shifts } from './sampleData';
+import { downtimeReasons, emptyEntry, sampleEntries, shifts } from './sampleData';
 import type { FilterState, ProductionEntry } from './types';
 
 type Screen = 'entry' | 'table' | 'dashboard' | 'reports' | 'guide';
 type GroupRow = { label: string; count: number; setup: number | null; runtime: number | null; output: number | null; downtime: number; actual: number };
 
 const storageKey = 'production-efficiency-tracker-v2';
+const machineNamesKey = 'production-efficiency-tracker-machine-names';
+const operatorNamesKey = 'production-efficiency-tracker-operator-names';
 
 const inputFields: Array<keyof ProductionEntry> = [
   'date',
@@ -78,6 +80,38 @@ function useEntries() {
   }, [entries]);
 
   return { entries, setEntries };
+}
+
+function useSavedNames(key: string) {
+  const [names, setNames] = useState<string[]>(() => {
+    const saved = localStorage.getItem(key);
+    if (!saved) return [];
+    try {
+      const parsed = JSON.parse(saved) as string[];
+      return Array.isArray(parsed) ? parsed.filter(Boolean).sort((a, b) => a.localeCompare(b)) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(names));
+  }, [key, names]);
+
+  function saveName(value: string) {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    setNames((current) => {
+      if (current.some((name) => name.toLocaleLowerCase() === trimmed.toLocaleLowerCase())) return current;
+      return [...current, trimmed].sort((a, b) => a.localeCompare(b));
+    });
+  }
+
+  return { names, saveName };
+}
+
+function uniqueNames(values: string[]) {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 }
 
 function filterEntries(entries: ProductionEntry[], filters: FilterState) {
@@ -168,18 +202,30 @@ function groupBy(entries: ProductionEntry[], key: keyof ProductionEntry): GroupR
 
 function App() {
   const { entries, setEntries } = useEntries();
+  const savedMachines = useSavedNames(machineNamesKey);
+  const savedOperators = useSavedNames(operatorNamesKey);
   const [screen, setScreen] = useState<Screen>('entry');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<ProductionEntry>(makeEntry);
   const [filters, setFilters] = useState<FilterState>({ from: '', to: '', shift: '', machine: '', operatorName: '' });
 
   const filteredEntries = useMemo(() => filterEntries(entries, filters), [entries, filters]);
+  const machineFilterOptions = useMemo(
+    () => uniqueNames([...entries.map((entry) => entry.machine), ...savedMachines.names]),
+    [entries, savedMachines.names],
+  );
+  const operatorFilterOptions = useMemo(
+    () => uniqueNames([...entries.map((entry) => entry.operatorName), ...savedOperators.names]),
+    [entries, savedOperators.names],
+  );
   const sortedEntries = useMemo(() => [...filteredEntries].sort((a, b) => b.date.localeCompare(a.date)), [filteredEntries]);
   const draftCalc = calculateEntry(draft);
   const summary = summarize(filteredEntries);
   const warningCount = entries.reduce((sum, entry) => sum + (calculateEntry(entry).warnings.length ? 1 : 0), 0);
 
   function saveDraft() {
+    savedMachines.saveName(draft.machine);
+    savedOperators.saveName(draft.operatorName);
     if (editingId) {
       setEntries((current) => current.map((entry) => (entry.id === editingId ? { ...draft, id: editingId } : entry)));
     } else {
@@ -262,7 +308,12 @@ function App() {
           </div>
         </header>
 
-        <Filters filters={filters} setFilters={setFilters} />
+        <Filters
+          filters={filters}
+          setFilters={setFilters}
+          machineOptions={machineFilterOptions}
+          operatorOptions={operatorFilterOptions}
+        />
 
         {screen === 'entry' && (
           <DailyEntry
@@ -275,6 +326,8 @@ function App() {
               setDraft(makeEntry());
               setEditingId(null);
             }}
+            machineSuggestions={savedMachines.names}
+            operatorSuggestions={savedOperators.names}
           />
         )}
         {screen === 'table' && (
@@ -310,9 +363,13 @@ function screenTitle(screen: Screen) {
 function Filters({
   filters,
   setFilters,
+  machineOptions,
+  operatorOptions,
 }: {
   filters: FilterState;
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
+  machineOptions: string[];
+  operatorOptions: string[];
 }) {
   return (
     <section className="filters" aria-label="Entry filters">
@@ -337,7 +394,7 @@ function Filters({
         Machine
         <select value={filters.machine} onChange={(event) => setFilters((current) => ({ ...current, machine: event.target.value }))}>
           <option value="">All machines</option>
-          {machines.map((machine) => (
+          {machineOptions.map((machine) => (
             <option key={machine}>{machine}</option>
           ))}
         </select>
@@ -346,7 +403,7 @@ function Filters({
         Operator
         <select value={filters.operatorName} onChange={(event) => setFilters((current) => ({ ...current, operatorName: event.target.value }))}>
           <option value="">All operators</option>
-          {operators.map((operator) => (
+          {operatorOptions.map((operator) => (
             <option key={operator}>{operator}</option>
           ))}
         </select>
@@ -362,6 +419,8 @@ function DailyEntry({
   updateDraft,
   saveDraft,
   cancelEdit,
+  machineSuggestions,
+  operatorSuggestions,
 }: {
   draft: ProductionEntry;
   calc: ReturnType<typeof calculateEntry>;
@@ -369,6 +428,8 @@ function DailyEntry({
   updateDraft: (field: keyof ProductionEntry, value: string) => void;
   saveDraft: () => void;
   cancelEdit: () => void;
+  machineSuggestions: string[];
+  operatorSuggestions: string[];
 }) {
   return (
     <section className="entry-layout">
@@ -392,20 +453,32 @@ function DailyEntry({
           </label>
           <label>
             Machine
-            <select value={draft.machine} onChange={(event) => updateDraft('machine', event.target.value)}>
-              {machines.map((machine) => (
-                <option key={machine}>{machine}</option>
-              ))}
-            </select>
+            <input
+              list="machine-suggestions"
+              value={draft.machine}
+              onChange={(event) => updateDraft('machine', event.target.value)}
+              placeholder="Type machine name"
+            />
           </label>
           <label>
             Operator Name
-            <select value={draft.operatorName} onChange={(event) => updateDraft('operatorName', event.target.value)}>
-              {operators.map((operator) => (
-                <option key={operator}>{operator}</option>
-              ))}
-            </select>
+            <input
+              list="operator-suggestions"
+              value={draft.operatorName}
+              onChange={(event) => updateDraft('operatorName', event.target.value)}
+              placeholder="Type operator name"
+            />
           </label>
+          <datalist id="machine-suggestions">
+            {machineSuggestions.map((machine) => (
+              <option key={machine} value={machine} />
+            ))}
+          </datalist>
+          <datalist id="operator-suggestions">
+            {operatorSuggestions.map((operator) => (
+              <option key={operator} value={operator} />
+            ))}
+          </datalist>
           <NumberInput label="Shift Hours" value={draft.shiftHours} onChange={(value) => updateDraft('shiftHours', value)} step="0.25" />
           <NumberInput label="Break Minutes" value={draft.breakMinutes} onChange={(value) => updateDraft('breakMinutes', value)} />
           <NumberInput label="Setup Count" value={draft.setupCount} onChange={(value) => updateDraft('setupCount', value)} />
