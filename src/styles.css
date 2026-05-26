@@ -3,6 +3,8 @@
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #f4f6f4;
   color: #1d2620;
+  --line: #111;
+  --line-soft: #111;
 }
 
 * {
@@ -40,6 +42,7 @@ button {
   position: sticky;
   top: 0;
   height: 100vh;
+  border-right: 2px solid var(--line);
 }
 
 .brand {
@@ -89,11 +92,13 @@ nav button {
   justify-content: flex-start;
   color: #eef7f0;
   background: transparent;
+  border: 2px solid transparent;
 }
 
 nav button.active,
 nav button:hover {
   background: #24574c;
+  border-color: #f7fbf8;
 }
 
 svg {
@@ -111,6 +116,7 @@ svg {
   padding: 12px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.08);
+  border: 2px solid var(--line);
 }
 
 main {
@@ -160,12 +166,13 @@ h2 {
 .primary {
   background: #217a54;
   color: white;
+  border: 2px solid var(--line) !important;
 }
 
 .ghost {
   background: white;
   color: #214239;
-  border: 1px solid #d9e1dc !important;
+  border: 2px solid var(--line) !important;
 }
 
 .filters,
@@ -176,7 +183,7 @@ h2 {
 .guide article,
 .notice {
   background: white;
-  border: 1px solid #dde5df;
+  border: 2px solid var(--line);
   border-radius: 8px;
   box-shadow: 0 8px 28px rgba(20, 36, 29, 0.06);
 }
@@ -201,7 +208,7 @@ input,
 select,
 textarea {
   width: 100%;
-  border: 2px solid #111;
+  border: 2px solid var(--line);
   border-radius: 7px;
   padding: 10px 11px;
   color: #1d2620;
@@ -257,6 +264,7 @@ textarea {
 
 .pill {
   border-radius: 999px;
+  border: 2px solid var(--line);
   background: #e1f4e9;
   color: #17643f;
   padding: 6px 10px;
@@ -279,7 +287,7 @@ textarea {
   justify-content: space-between;
   gap: 12px;
   padding: 10px 12px;
-  border: 2px solid #111;
+  border: 2px solid var(--line);
   border-radius: 8px;
   background: #fff;
 }
@@ -301,7 +309,7 @@ textarea {
 .badge,
 .summary-card {
   border-radius: 8px;
-  border: 2px solid #111;
+  border: 2px solid var(--line);
   padding: 12px;
 }
 
@@ -350,8 +358,9 @@ textarea {
   margin-top: 16px;
   padding: 12px;
   background: #fff5d8;
-  border-left: 4px solid #d79b00;
-  border-radius: 6px;
+  border: 2px solid var(--line);
+  border-left-width: 6px;
+  border-radius: 8px;
 }
 
 .table-scroll {
@@ -363,13 +372,14 @@ table {
   width: 100%;
   border-collapse: collapse;
   min-width: 1200px;
+  border: 2px solid var(--line);
 }
 
 th,
 td {
   text-align: left;
   padding: 10px;
-  border-bottom: 1px solid #e7ede9;
+  border: 2px solid var(--line);
   vertical-align: top;
   font-size: 0.87rem;
 }
@@ -377,13 +387,14 @@ td {
 th {
   position: sticky;
   top: 0;
-  background: #f3f7f4;
+  background: #eaf0ec;
   z-index: 1;
   color: #34463e;
+  border-bottom: 2px solid var(--line);
 }
 
 tr.needs-review td:first-child {
-  border-left: 4px solid #d79b00;
+  box-shadow: inset 6px 0 0 #d79b00;
 }
 
 .score {
@@ -391,6 +402,7 @@ tr.needs-review td:first-child {
   min-width: 70px;
   justify-content: center;
   border-radius: 999px;
+  border: 2px solid var(--line);
   padding: 5px 8px;
   font-weight: 900;
 }
@@ -399,7 +411,7 @@ tr.needs-review td:first-child {
   width: 34px;
   height: 34px;
   border-radius: 7px;
-  border: 1px solid #dce5df;
+  border: 2px solid var(--line);
   background: white;
   color: #23463d;
   display: inline-grid;
@@ -447,7 +459,7 @@ tr.needs-review td:first-child {
 
 .print-preview {
   background: white;
-  border: 2px solid #111;
+  border: 2px solid var(--line);
   border-radius: 8px;
   box-shadow: 0 8px 28px rgba(20, 36, 29, 0.06);
   display: grid;
@@ -460,7 +472,7 @@ tr.needs-review td:first-child {
   justify-content: space-between;
   gap: 20px;
   align-items: flex-start;
-  border-bottom: 2px solid #111;
+  border-bottom: 2px solid var(--line);
   padding-bottom: 14px;
 }
 
@@ -523,12 +535,14 @@ tr.needs-review td:first-child {
   background: #edf2ef;
   border-radius: 999px;
   overflow: hidden;
+  border: 2px solid var(--line);
 }
 
 .bar-track div {
   height: 100%;
   background: #3f8f6d;
   border-radius: inherit;
+  border-right: 2px solid var(--line);
 }
 
 .guide {
@@ -656,7 +670,7 @@ tr.needs-review td:first-child {
   }
 
   .bar-track {
-    border: 1px solid #111;
+    border: 2px solid var(--line);
   }
 
   th {
