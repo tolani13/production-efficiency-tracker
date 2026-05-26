@@ -4,7 +4,6 @@ import {
   BarChart3,
   BookOpen,
   Download,
-  Factory,
   FileText,
   LayoutDashboard,
   Pencil,
@@ -16,6 +15,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { average, calculateEntry, efficiencyClass, formatNumber, formatPercent } from './calculations';
+import nordfabLogo from './assets/nordfab-logo.png';
 import { downtimeReasons, emptyEntry, machines, sampleEntries, shifts } from './sampleData';
 import type { FilterState, ProductionEntry } from './types';
 
@@ -266,7 +266,7 @@ function App() {
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <Factory aria-hidden="true" />
+          <img src={nordfabLogo} alt="Nordfab" />
           <div>
             <strong>Production Efficiency Tracker</strong>
             <span>Cloud demo V1</span>
