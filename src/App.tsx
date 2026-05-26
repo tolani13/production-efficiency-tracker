@@ -649,7 +649,7 @@ function Dashboard({ summary, entries, warningCount }: { summary: ReturnType<typ
       )}
       <section className="report-panel">
         <h2>Weekly Output Trend</h2>
-        <BarList rows={byDay.map((row) => ({ label: row.label, value: row.actual }))} valueLabel="pipes" />
+        <ColumnChart rows={byDay.map((row) => ({ label: row.label, value: row.actual }))} valueLabel="pipes" />
       </section>
     </section>
   );
