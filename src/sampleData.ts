@@ -1,6 +1,6 @@
 import type { ProductionEntry } from './types';
 
-export const shifts = ['Days', '1st', '2nd'] as const;
+export const shifts = ['1st', '2nd'] as const;
 export const machines = ['FlexMaster', 'FlexiStar'];
 export const downtimeReasons = [
   'None',
@@ -15,7 +15,7 @@ export const downtimeReasons = [
 export const emptyEntry: ProductionEntry = {
   id: '',
   date: '2026-05-26',
-  shift: 'Days',
+  shift: '1st',
   machine: 'FlexMaster',
   operatorName: '',
   shiftHours: 8.5,
@@ -35,7 +35,7 @@ export const sampleEntries: ProductionEntry[] = [
   {
     id: 'sample-2026-05-22-1',
     date: '2026-05-22',
-    shift: 'Days',
+    shift: '1st',
     shiftHours: 8.5,
     breakMinutes: 60,
     setupCount: 4,
