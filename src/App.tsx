@@ -439,7 +439,7 @@ function DailyEntry({
         </div>
       </div>
 
-      <CalculatedPreview calc={calc} />
+      <CalculatedPreview calc={calc} actualPipeQuantity={draft.actualPipeQuantity} />
     </section>
   );
 }
@@ -453,7 +453,7 @@ function NumberInput({ label, value, onChange, step = '1' }: { label: string; va
   );
 }
 
-function CalculatedPreview({ calc }: { calc: ReturnType<typeof calculateEntry> }) {
+function CalculatedPreview({ calc, actualPipeQuantity }: { calc: ReturnType<typeof calculateEntry>; actualPipeQuantity: number }) {
   return (
     <aside className="preview-panel">
       <div className="section-heading">
@@ -467,6 +467,7 @@ function CalculatedPreview({ calc }: { calc: ReturnType<typeof calculateEntry> }
           ['Runtime After Actual Setups', formatNumber(calc.runtimeAfterActualSetups)],
           ['Productive Runtime', formatNumber(calc.productiveRuntime)],
           ['Theoretical Quantity', formatNumber(calc.theoreticalQuantity)],
+          ['Actual Pipe Quantity', formatNumber(actualPipeQuantity)],
         ]}
       />
       <div className="efficiency-row">

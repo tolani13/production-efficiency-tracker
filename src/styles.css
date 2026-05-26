@@ -200,11 +200,22 @@ input,
 select,
 textarea {
   width: 100%;
-  border: 1px solid #cbd7d0;
+  border: 2px solid #111;
   border-radius: 7px;
   padding: 10px 11px;
   color: #1d2620;
   background: #fbfdfb;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 
 textarea {
@@ -266,8 +277,10 @@ textarea {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding: 9px 0;
-  border-bottom: 1px solid #edf1ee;
+  padding: 10px 12px;
+  border: 2px solid #111;
+  border-radius: 8px;
+  background: #fff;
 }
 
 .metric-list dt {
@@ -287,7 +300,7 @@ textarea {
 .badge,
 .summary-card {
   border-radius: 8px;
-  border: 1px solid #dae4dd;
+  border: 2px solid #111;
   padding: 12px;
 }
 
